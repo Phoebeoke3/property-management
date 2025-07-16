@@ -1,0 +1,4 @@
+.env
+pycache
+*node_modules
+*venv

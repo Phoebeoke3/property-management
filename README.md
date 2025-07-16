@@ -2,7 +2,7 @@
 
 A comprehensive property management application for landlords and administrators to manage properties, tenants, and rental agreements. Now with enhanced dashboard features and external deployment capabilities!
 
-## ✨ Features
+##  Features
 
 - **Enhanced Dashboard**: Add properties, add locations, filter by location
 - **Property Management**: Create and manage individual property profiles
@@ -14,7 +14,7 @@ A comprehensive property management application for landlords and administrators
 - **Scalable Architecture**: Built for future integrations and growth
 - **External Deployment**: Ready for cloud hosting and mobile installation
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8+
@@ -37,7 +37,7 @@ A comprehensive property management application for landlords and administrators
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
 
-## 🌐 External Deployment
+##  External Deployment
 
 ### Deploy to Netlify (Recommended - Free)
 1. Build the frontend: `npm run build`
@@ -55,7 +55,7 @@ Your app is a Progressive Web App (PWA):
 - **Android**: Chrome → Menu → "Add to Home screen"
 - **iPhone**: Safari → Share → "Add to Home Screen"
 
-## 🎯 Dashboard Features
+##  Dashboard Features
 
 ### Enhanced Dashboard
 - **Add Property Button**: Opens modal to add new properties
@@ -63,11 +63,6 @@ Your app is a Progressive Web App (PWA):
 - **Location Filter**: Dropdown to filter properties by location
 - **Property Cards**: Display location, type, rent, and status
 - **Statistics Cards**: Show key metrics (total properties, tenants, revenue)
-
-### Sample Data
-- **Locations**: Downtown, Suburbs, City Center, Riverside
-- **Properties**: Sample properties with details and status
-- **Interactive Modals**: Forms for adding properties and locations
 
 ## Tech Stack
 
@@ -121,7 +116,7 @@ property-management/
 
 Once the backend is running, visit `http://localhost:8000/docs` for interactive API documentation.
 
-## 🎨 UI Features
+##  UI Features
 
 - **Modern Design**: Clean, professional interface
 - **Responsive Layout**: Works on desktop, tablet, and mobile
@@ -154,14 +149,14 @@ cd frontend
 npm run build
 ```
 
-## 📱 Mobile Features
+##  Mobile Features
 
 - **PWA Ready**: Install on mobile devices
 - **Responsive Design**: Optimized for all screen sizes
 - **Touch-friendly**: Large buttons and touch targets
 - **Offline Capable**: Basic offline functionality
 
-## 🚀 Deployment Options
+##  Deployment Options
 
 ### Free Tier (Recommended)
 - **Frontend**: Netlify/Vercel (Free)
@@ -175,14 +170,14 @@ npm run build
 - **Database**: Railway PostgreSQL ($5/month)
 - **Total Cost**: ~$30/month
 
-## 🔒 Security
+##  Security
 
 - **HTTPS**: All deployments use HTTPS
 - **Environment Variables**: Secure configuration management
 - **CORS**: Proper cross-origin resource sharing
 - **Input Validation**: Pydantic schemas for data validation
 
-## 📈 Future Enhancements
+##  Future Enhancements
 
 - [ ] User authentication and authorization
 - [ ] Real-time notifications
@@ -193,7 +188,7 @@ npm run build
 - [ ] Document upload and management
 - [ ] Maintenance request system
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -201,11 +196,11 @@ npm run build
 4. Add tests
 5. Submit a pull request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License.
 
-## 🆘 Support
+##  Support
 
 - Check the [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions
 - Review the API documentation at `http://localhost:8000/docs`
