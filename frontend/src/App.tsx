@@ -21,9 +21,12 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
 
   // Add state for property fields
   const [propertyName, setPropertyName] = useState('');
-  const [propertyLocation, setPropertyLocation] = useState(locations[0]);
+  const [propertyLocation, setPropertyLocation] = useState('');
   const [propertyType, setPropertyType] = useState('');
   const [monthlyRent, setMonthlyRent] = useState('');
+  // Add Location inline in Add Property
+  const [isAddingNewLocation, setIsAddingNewLocation] = useState(false);
+  const [newLocationName, setNewLocationName] = useState('');
 
   // Add state for tenant fields
   const [tenantFirstName, setTenantFirstName] = useState('');
@@ -75,11 +78,17 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
   // Handle property form submission
   const handleAddProperty = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Determine final location (either selected or newly added)
+    const trimmedNewLocation = newLocationName.trim();
+    const finalLocation = isAddingNewLocation && trimmedNewLocation
+      ? trimmedNewLocation
+      : propertyLocation;
+
     // Construct payload
     const payload: any = {
       title: propertyName,
       address: propertyName, // For demo, using name as address
-      city: propertyLocation,
+      city: finalLocation,
       state: '',
       zip_code: '',
       country: 'USA',
@@ -100,17 +109,23 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
     try {
       const newProperty = await createPropertyWithTenant(payload);
       setProperties(prev => [...prev, newProperty]);
+      // If a new location was added, persist it to the locations list
+      if (isAddingNewLocation && finalLocation && !locations.includes(finalLocation)) {
+        setLocations(prev => [...prev, finalLocation]);
+      }
       alert('Property and tenant details submitted!');
       setShowAddProperty(false);
       // Reset form fields
       setPropertyName('');
-      setPropertyLocation(locations[0]);
+      setPropertyLocation('');
       setPropertyType('');
       setMonthlyRent('');
       setTenantFirstName('');
       setTenantLastName('');
       setTenantEmail('');
       setTenantPhone('');
+      setIsAddingNewLocation(false);
+      setNewLocationName('');
     } catch (err) {
       alert('Error submitting property');
     }
@@ -208,11 +223,42 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
                 </div>
                 <div className="form-group">
                   <label>Location:</label>
-                  <select value={propertyLocation} onChange={e => setPropertyLocation(e.target.value)}>
-                    {locations.slice(1).map(location => (
-                      <option key={location} value={location}>{location}</option>
-                    ))}
-                  </select>
+                  {isAddingNewLocation ? (
+                    <>
+                      <input
+                        type="text"
+                        placeholder="Enter new location"
+                        value={newLocationName}
+                        onChange={e => setNewLocationName(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => { setIsAddingNewLocation(false); setNewLocationName(''); }}
+                      >
+                        Use existing location
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <select
+                        value={propertyLocation}
+                        onChange={e => setPropertyLocation(e.target.value)}
+                      >
+                        <option value="">Select location</option>
+                        {locations.map(location => (
+                          <option key={location} value={location}>{location}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => setIsAddingNewLocation(true)}
+                      >
+                        + Add new location
+                      </button>
+                    </>
+                  )}
                 </div>
                 <div className="form-group">
                   <label>Property Type:</label>
