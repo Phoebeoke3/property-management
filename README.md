@@ -4,7 +4,7 @@ A comprehensive property management application for landlords and administrators
 
 ##  Features
 
-- **Enhanced Dashboard**: Add properties, add locations, filter by location
+- **Enhanced Dashboard**: Add properties with integrated location management, filter by location
 - **Property Management**: Create and manage individual property profiles
 - **Tenant Management**: Store tenant details and contact information
 - **Document Management**: Upload and store tenancy agreements and other documents
@@ -58,11 +58,15 @@ Your app is a Progressive Web App (PWA):
 ##  Dashboard Features
 
 ### Enhanced Dashboard
-- **Add Property Button**: Opens modal to add new properties
-- **Add Location Button**: Opens modal to add new locations
+- **Add Property Button**: Opens modal to add new properties with integrated location management
 - **Location Filter**: Dropdown to filter properties by location
 - **Property Cards**: Display location, type, rent, and status
 - **Statistics Cards**: Show key metrics (total properties, tenants, revenue)
+
+### Property Management Features
+- **Integrated Location Management**: Add new locations directly from the Add Property form
+- **Dynamic Location Selection**: Choose from existing locations or create new ones on-the-fly
+- **Location Validation**: Prevents duplicate location entries
 
 ## Tech Stack
 

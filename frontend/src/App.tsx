@@ -21,7 +21,7 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
 
   // Add state for property fields
   const [propertyName, setPropertyName] = useState('');
-  const [propertyLocation, setPropertyLocation] = useState(locations[0]);
+  const [propertyLocation, setPropertyLocation] = useState(locations[1] || '');
   const [propertyType, setPropertyType] = useState('');
   const [monthlyRent, setMonthlyRent] = useState('');
 
@@ -30,6 +30,31 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
   const [tenantLastName, setTenantLastName] = useState('');
   const [tenantEmail, setTenantEmail] = useState('');
   const [tenantPhone, setTenantPhone] = useState('');
+
+  // Add state for location management
+  const [showAddLocation, setShowAddLocation] = useState(false);
+  const [newLocation, setNewLocation] = useState('');
+
+  // Initialize propertyLocation when locations change
+  useEffect(() => {
+    if (locations.length > 1 && !propertyLocation) {
+      setPropertyLocation(locations[1]);
+    }
+  }, [locations, propertyLocation]);
+
+  // Handle adding new location
+  const handleAddLocation = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newLocation.trim() && !locations.includes(newLocation.trim())) {
+      setLocations(prev => [...prev, newLocation.trim()]);
+      setPropertyLocation(newLocation.trim());
+      setNewLocation('');
+      setShowAddLocation(false);
+      alert('Location added successfully!');
+    } else if (locations.includes(newLocation.trim())) {
+      alert('Location already exists!');
+    }
+  };
 
   // --- PROPERTIES CRUD ---
   // Add state for editing property
@@ -104,7 +129,7 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
       setShowAddProperty(false);
       // Reset form fields
       setPropertyName('');
-      setPropertyLocation(locations[0]);
+      setPropertyLocation(locations[1] || '');
       setPropertyType('');
       setMonthlyRent('');
       setTenantFirstName('');
@@ -208,11 +233,25 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
                 </div>
                 <div className="form-group">
                   <label>Location:</label>
-                  <select value={propertyLocation} onChange={e => setPropertyLocation(e.target.value)}>
-                    {locations.slice(1).map(location => (
-                      <option key={location} value={location}>{location}</option>
-                    ))}
-                  </select>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <select 
+                      value={propertyLocation} 
+                      onChange={e => setPropertyLocation(e.target.value)}
+                      style={{ flex: 1 }}
+                    >
+                      {locations.slice(1).map(location => (
+                        <option key={location} value={location}>{location}</option>
+                      ))}
+                    </select>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary"
+                      onClick={() => setShowAddLocation(true)}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      + Add Location
+                    </button>
+                  </div>
                 </div>
                 <div className="form-group">
                   <label>Property Type:</label>
@@ -246,6 +285,56 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
                   </button>
                   <button type="submit" className="btn btn-primary">
                     Add Property
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Location Modal */}
+      {showAddLocation && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3>Add New Location</h3>
+              <button 
+                className="modal-close" 
+                onClick={() => {
+                  setShowAddLocation(false);
+                  setNewLocation('');
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleAddLocation}>
+                <div className="form-group">
+                  <label>Location Name:</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., West Side, East End, City Center" 
+                    value={newLocation} 
+                    onChange={e => setNewLocation(e.target.value)}
+                    required
+                    autoFocus
+                  />
+                </div>
+                <div className="form-actions">
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={() => {
+                      setShowAddLocation(false);
+                      setNewLocation('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Add Location
                   </button>
                 </div>
               </form>
@@ -535,7 +624,7 @@ const Documents = () => (
 );
 
 const App: React.FC = () => {
-  const [locations, setLocations] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>(['All Locations', 'Downtown', 'Suburbs', 'Uptown']);
   const [properties, setProperties] = useState<any[]>([]);
   const [tenants, setTenants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
