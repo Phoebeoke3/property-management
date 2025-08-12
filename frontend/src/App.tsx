@@ -34,6 +34,12 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
   const [tenantEmail, setTenantEmail] = useState('');
   const [tenantPhone, setTenantPhone] = useState('');
 
+  // Derive locations from properties
+  React.useEffect(() => {
+    const uniqueLocations = ['All Locations', ...Array.from(new Set(properties.map(p => p.city).filter(Boolean)))];
+    setLocations(uniqueLocations);
+  }, [properties, setLocations]);
+
   // --- PROPERTIES CRUD ---
   // Add state for editing property
   const [editingProperty, setEditingProperty] = useState<any | null>(null);
@@ -73,7 +79,7 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
 
   const filteredProperties = selectedLocation === 'All Locations' 
     ? properties 
-    : properties.filter(property => property.location === selectedLocation);
+    : properties.filter(property => property.city === selectedLocation);
 
   // Handle property form submission
   const handleAddProperty = async (e: React.FormEvent) => {
@@ -190,10 +196,12 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
           ) : (
             filteredProperties.map(property => (
               <div key={property.id} className="property-card">
-                <h3>{property.name}</h3>
-                <p className="property-location">{property.location}</p>
-                <p>{property.type} - {property.rent}</p>
-                <span className={`status ${property.status?.toLowerCase()}`}>{property.status}</span>
+                <h3>{property.title}</h3>
+                <p className="property-location">{property.city}</p>
+                <p>{property.property_type} - ${property.monthly_rent}</p>
+                <span className={`status ${property.is_available ? 'available' : 'unavailable'}`}>
+                  {property.is_available ? 'Available' : 'Occupied'}
+                </span>
                 <button onClick={() => handleEditProperty(property)}>Edit</button>
                 <button onClick={() => handleDeleteProperty(property.id)}>Delete</button>
               </div>
@@ -246,7 +254,7 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
                         onChange={e => setPropertyLocation(e.target.value)}
                       >
                         <option value="">Select location</option>
-                        {locations.map(location => (
+                        {locations.filter(loc => loc !== 'All Locations').map(location => (
                           <option key={location} value={location}>{location}</option>
                         ))}
                       </select>
@@ -312,30 +320,25 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
               <form className="property-form" onSubmit={handleUpdateProperty}>
                 <div className="form-group">
                   <label>Property Name:</label>
-                  <input type="text" value={editingProperty.name} onChange={e => setEditingProperty({ ...editingProperty, name: e.target.value })} />
+                  <input type="text" value={editingProperty.title} onChange={e => setEditingProperty({ ...editingProperty, title: e.target.value })} />
                 </div>
                 <div className="form-group">
                   <label>Location:</label>
-                  <select value={editingProperty.location} onChange={e => setEditingProperty({ ...editingProperty, location: e.target.value })}>
-                    {locations.map(location => (
-                      <option key={location} value={location}>{location}</option>
-                    ))}
-                  </select>
+                  <input type="text" value={editingProperty.city} onChange={e => setEditingProperty({ ...editingProperty, city: e.target.value })} />
                 </div>
                 <div className="form-group">
                   <label>Property Type:</label>
-                  <input type="text" value={editingProperty.type} onChange={e => setEditingProperty({ ...editingProperty, type: e.target.value })} />
+                  <input type="text" value={editingProperty.property_type} onChange={e => setEditingProperty({ ...editingProperty, property_type: e.target.value })} />
                 </div>
                 <div className="form-group">
                   <label>Monthly Rent:</label>
-                  <input type="text" value={editingProperty.rent} onChange={e => setEditingProperty({ ...editingProperty, rent: e.target.value })} />
+                  <input type="number" value={editingProperty.monthly_rent} onChange={e => setEditingProperty({ ...editingProperty, monthly_rent: parseFloat(e.target.value) })} />
                 </div>
                 <div className="form-group">
-                  <label>Status:</label>
-                  <select value={editingProperty.status} onChange={e => setEditingProperty({ ...editingProperty, status: e.target.value })}>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Pending">Pending</option>
+                  <label>Available:</label>
+                  <select value={editingProperty.is_available} onChange={e => setEditingProperty({ ...editingProperty, is_available: e.target.value === 'true' })}>
+                    <option value="true">Available</option>
+                    <option value="false">Occupied</option>
                   </select>
                 </div>
                 <div className="form-actions">
@@ -491,7 +494,7 @@ const Tenants = ({ properties, tenants, setTenants, createTenant }: {
                   <select value={tenantProperty} onChange={e => setTenantProperty(e.target.value)} required>
                     <option value="">Select Property</option>
                     {properties.map((property: any) => (
-                      <option key={property.id} value={property.name}>{property.name}</option>
+                      <option key={property.id} value={property.title}>{property.title}</option>
                     ))}
                   </select>
                 </div>
@@ -540,7 +543,7 @@ const Tenants = ({ properties, tenants, setTenants, createTenant }: {
                   <select value={editingTenant.property} onChange={e => setEditingTenant({ ...editingTenant, property: e.target.value })}>
                     <option value="">Select Property</option>
                     {properties.map((property: any) => (
-                      <option key={property.id} value={property.name}>{property.name}</option>
+                      <option key={property.id} value={property.title}>{property.title}</option>
                     ))}
                   </select>
                 </div>
