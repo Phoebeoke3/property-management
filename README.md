@@ -30,7 +30,9 @@ A comprehensive property management application for landlords and administrators
 4. Install dependencies: `pip install -r requirements.txt`
 5. Set up environment variables (see `.env.example`)
 6. Run database migrations: `python -m alembic upgrade head`
-7. Start the server: `uvicorn app.main:app --reload`
+7. Start the server: 
+   - **Windows**: `uvicorn app.main:app --reload` (from backend directory)
+   - **Mac/Linux**: `uvicorn app.main:app --reload`
 
 ### Frontend Setup
 1. Navigate to the frontend directory
@@ -143,6 +145,11 @@ npm install
 npm start
 ```
 
+**Important Windows Notes:**
+- Always run uvicorn from the `backend` directory
+- Don't use `| cat` in PowerShell (Unix/Linux only)
+- If you get import errors, ensure you're in the backend directory
+
 ### Building for Production
 ```bash
 cd frontend
@@ -205,6 +212,24 @@ This project is licensed under the MIT License.
 - Check the [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions
 - Review the API documentation at `http://localhost:8000/docs`
 - Check the troubleshooting section in the deployment guide
+
+##  Troubleshooting
+
+### Common Issues
+
+**Import Error: "No module named 'app'"**
+- **Solution**: Always run uvicorn from the `backend` directory
+- **Command**: `cd backend && uvicorn app.main:app --reload`
+
+**PowerShell "cat" Error**
+- **Cause**: `| cat` is Unix/Linux syntax, not Windows PowerShell
+- **Solution**: Remove `| cat` from the command
+- **Correct**: `uvicorn app.main:app --reload`
+
+**Server Won't Start**
+- Ensure virtual environment is activated: `.\venv\Scripts\Activate.ps1`
+- Check you're in the backend directory: `pwd` should show `...\backend`
+- Verify dependencies are installed: `pip list | findstr fastapi`
 
 ---
 
