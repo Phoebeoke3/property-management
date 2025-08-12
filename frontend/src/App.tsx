@@ -3,10 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import { fetchProperties, fetchTenants, createPropertyWithTenant, createTenant, updateProperty, deleteProperty, updateTenant, deleteTenant } from './services/api';
 
-// Replace with empty state and fetch from API in the future
-const [locations, setLocations] = useState<string[]>([]);
-const [properties, setProperties] = useState<any[]>([]);
-
 // Simple page components
 // Update Dashboard to accept properties, setProperties, locations, setLocations as props
 const Dashboard = ({ properties, setProperties, locations, setLocations, createPropertyWithTenant }: {
@@ -50,7 +46,26 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
     setPropertyEditLoading(true);
     setPropertyEditError(null);
     try {
-      const response = await updateProperty(editingProperty.id, editingProperty);
+      const allowedUpdate: any = {
+        title: editingProperty.title,
+        description: editingProperty.description,
+        address: editingProperty.address,
+        city: editingProperty.city,
+        state: editingProperty.state,
+        zip_code: editingProperty.zip_code,
+        country: editingProperty.country,
+        property_type: editingProperty.property_type,
+        bedrooms: editingProperty.bedrooms,
+        bathrooms: editingProperty.bathrooms,
+        square_feet: editingProperty.square_feet,
+        year_built: editingProperty.year_built,
+        monthly_rent: editingProperty.monthly_rent,
+        security_deposit: editingProperty.security_deposit,
+        utilities_included: editingProperty.utilities_included,
+        is_available: editingProperty.is_available,
+        is_active: editingProperty.is_active,
+      };
+      const response = await updateProperty(editingProperty.id, allowedUpdate);
       const updated = response.data;
       setProperties(prev => prev.map(p => p.id === updated.id ? updated : p));
       setEditingProperty(null);
@@ -71,9 +86,9 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
     }
   };
 
-  const filteredProperties = selectedLocation === 'All Locations' 
-    ? properties 
-    : properties.filter(property => property.location === selectedLocation);
+  const filteredProperties = selectedLocation === 'All Locations'
+    ? properties
+    : properties.filter(property => property.city === selectedLocation);
 
   // Handle property form submission
   const handleAddProperty = async (e: React.FormEvent) => {
@@ -107,7 +122,8 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
     }
     // Send to backend (replace with actual API call)
     try {
-      const newProperty = await createPropertyWithTenant(payload);
+      const response = await createPropertyWithTenant(payload);
+      const newProperty = response.data;
       setProperties(prev => [...prev, newProperty]);
       // If a new location was added, persist it to the locations list
       if (isAddingNewLocation && finalLocation && !locations.includes(finalLocation)) {
@@ -185,15 +201,15 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
         </div>
 
         <div className="property-list">
-          {filteredProperties.length === 0 ? (
+            {filteredProperties.length === 0 ? (
             <div className="empty-state">No properties found.</div>
           ) : (
             filteredProperties.map(property => (
               <div key={property.id} className="property-card">
-                <h3>{property.name}</h3>
-                <p className="property-location">{property.location}</p>
-                <p>{property.type} - {property.rent}</p>
-                <span className={`status ${property.status?.toLowerCase()}`}>{property.status}</span>
+                <h3>{property.title}</h3>
+                <p className="property-location">{property.city}</p>
+                <p>{property.property_type} - ${property.monthly_rent}</p>
+                <span className={`status ${property.is_active ? 'active' : 'inactive'}`}>{property.is_active ? 'Active' : 'Inactive'}</span>
                 <button onClick={() => handleEditProperty(property)}>Edit</button>
                 <button onClick={() => handleDeleteProperty(property.id)}>Delete</button>
               </div>
@@ -311,12 +327,12 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
             <div className="modal-body">
               <form className="property-form" onSubmit={handleUpdateProperty}>
                 <div className="form-group">
-                  <label>Property Name:</label>
-                  <input type="text" value={editingProperty.name} onChange={e => setEditingProperty({ ...editingProperty, name: e.target.value })} />
+                  <label>Title:</label>
+                  <input type="text" value={editingProperty.title} onChange={e => setEditingProperty({ ...editingProperty, title: e.target.value })} />
                 </div>
                 <div className="form-group">
-                  <label>Location:</label>
-                  <select value={editingProperty.location} onChange={e => setEditingProperty({ ...editingProperty, location: e.target.value })}>
+                  <label>City:</label>
+                  <select value={editingProperty.city} onChange={e => setEditingProperty({ ...editingProperty, city: e.target.value })}>
                     {locations.map(location => (
                       <option key={location} value={location}>{location}</option>
                     ))}
@@ -324,18 +340,17 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
                 </div>
                 <div className="form-group">
                   <label>Property Type:</label>
-                  <input type="text" value={editingProperty.type} onChange={e => setEditingProperty({ ...editingProperty, type: e.target.value })} />
+                  <input type="text" value={editingProperty.property_type || ''} onChange={e => setEditingProperty({ ...editingProperty, property_type: e.target.value })} />
                 </div>
                 <div className="form-group">
                   <label>Monthly Rent:</label>
-                  <input type="text" value={editingProperty.rent} onChange={e => setEditingProperty({ ...editingProperty, rent: e.target.value })} />
+                  <input type="number" value={editingProperty.monthly_rent ?? ''} onChange={e => setEditingProperty({ ...editingProperty, monthly_rent: Number(e.target.value) })} />
                 </div>
                 <div className="form-group">
                   <label>Status:</label>
-                  <select value={editingProperty.status} onChange={e => setEditingProperty({ ...editingProperty, status: e.target.value })}>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Pending">Pending</option>
+                  <select value={editingProperty.is_active ? 'true' : 'false'} onChange={e => setEditingProperty({ ...editingProperty, is_active: e.target.value === 'true' })}>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
                   </select>
                 </div>
                 <div className="form-actions">
