@@ -183,28 +183,56 @@
   font-size: 0.9rem;
 }
 
+/* Property card buttons */
+.property-card button {
+  margin: 5px 2px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.property-card button:first-of-type {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.property-card button:first-of-type:hover {
+  background-color: #45a049;
+}
+
+.property-card button:last-of-type {
+  background-color: #f44336;
+  color: white;
+}
+
+.property-card button:last-of-type:hover {
+  background-color: #da190b;
+}
+
+/* Status indicators */
 .status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
+  margin: 5px 0;
 }
 
-.status.active {
-  background-color: #c6f6d5;
-  color: #22543d;
+.status.available {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
-.status.vacant {
-  background-color: #fed7d7;
-  color: #742a2a;
-}
-
-.status.occupied {
-  background-color: #c6f6d5;
-  color: #22543d;
+.status.unavailable {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
 /* Buttons */
