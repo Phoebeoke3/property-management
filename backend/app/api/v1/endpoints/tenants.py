@@ -15,18 +15,12 @@ router = APIRouter()
 def get_tenants(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Retrieve tenants.
     """
-    if current_user.role.value == "admin":
-        tenants = db.query(Tenant).offset(skip).limit(limit).all()
-    else:
-        # Get tenants from properties owned by current user
-        property_ids = [p.id for p in db.query(Property).filter(Property.owner_id == current_user.id).all()]
-        tenants = db.query(Tenant).filter(Tenant.property_id.in_(property_ids)).offset(skip).limit(limit).all()
+    tenants = db.query(Tenant).offset(skip).limit(limit).all()
     return tenants
 
 @router.post("/", response_model=TenantSchema)

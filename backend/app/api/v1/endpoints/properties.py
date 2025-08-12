@@ -16,16 +16,12 @@ router = APIRouter()
 def get_properties(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Retrieve properties.
     """
-    if current_user.role.value == "admin":
-        properties = db.query(Property).offset(skip).limit(limit).all()
-    else:
-        properties = db.query(Property).filter(Property.owner_id == current_user.id).offset(skip).limit(limit).all()
+    properties = db.query(Property).offset(skip).limit(limit).all()
     return properties
 
 @router.post("/", response_model=PropertySchema)

@@ -371,238 +371,14 @@ const Dashboard = ({ properties, setProperties, locations, setLocations, createP
   );
 };
 
-const Properties = ({ properties, setProperties, locations, setLocations, createPropertyWithTenant }: {
-  properties: any[],
-  setProperties: React.Dispatch<React.SetStateAction<any[]>>,
-  locations: string[],
-  setLocations: React.Dispatch<React.SetStateAction<string[]>>,
-  createPropertyWithTenant: (payload: any) => Promise<any>
-}) => {
-  const [selectedLocation, setSelectedLocation] = useState('All Locations');
-  const [showAddProperty, setShowAddProperty] = useState(false);
-
-  // Add state for property fields
-  const [propertyName, setPropertyName] = useState('');
-  const [propertyLocation, setPropertyLocation] = useState('');
-  const [propertyType, setPropertyType] = useState('');
-  const [monthlyRent, setMonthlyRent] = useState('');
-  const [isAddingNewLocation, setIsAddingNewLocation] = useState(false);
-  const [newLocationName, setNewLocationName] = useState('');
-
-  // Add state for tenant fields
-  const [tenantFirstName, setTenantFirstName] = useState('');
-  const [tenantLastName, setTenantLastName] = useState('');
-  const [tenantEmail, setTenantEmail] = useState('');
-  const [tenantPhone, setTenantPhone] = useState('');
-
-  const filteredProperties = selectedLocation === 'All Locations'
-    ? properties
-    : properties.filter(property => property.city === selectedLocation);
-
-  const handleAddProperty = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedNewLocation = newLocationName.trim();
-    const finalLocation = isAddingNewLocation && trimmedNewLocation
-      ? trimmedNewLocation
-      : propertyLocation;
-
-    const payload: any = {
-      title: propertyName,
-      address: propertyName,
-      city: finalLocation,
-      state: '',
-      zip_code: '',
-      country: 'USA',
-      property_type: propertyType,
-      monthly_rent: parseFloat(monthlyRent.replace(/[^0-9.]/g, '')) || 0,
-    };
-
-    if (tenantFirstName && tenantLastName && tenantEmail && tenantPhone) {
-      payload.tenant = {
-        first_name: tenantFirstName,
-        last_name: tenantLastName,
-        email: tenantEmail,
-        phone: tenantPhone,
-      };
-    }
-
-    try {
-      const response = await createPropertyWithTenant(payload);
-      const newProperty = response.data;
-      setProperties(prev => [...prev, newProperty]);
-      if (isAddingNewLocation && finalLocation && !locations.includes(finalLocation)) {
-        setLocations(prev => [...prev, finalLocation]);
-      }
-      alert('Property and tenant details submitted!');
-      setShowAddProperty(false);
-      setPropertyName('');
-      setPropertyLocation('');
-      setPropertyType('');
-      setMonthlyRent('');
-      setTenantFirstName('');
-      setTenantLastName('');
-      setTenantEmail('');
-      setTenantPhone('');
-      setIsAddingNewLocation(false);
-      setNewLocationName('');
-    } catch (err) {
-      alert('Error submitting property');
-    }
-  };
-
-  return (
-    <div className="page">
-      <div className="properties-header">
-        <h2>Properties</h2>
-        <div className="properties-actions">
-          <button 
-            className="btn btn-primary" 
-            onClick={() => setShowAddProperty(true)}
-          >
-            + Add Property
-          </button>
-        </div>
-      </div>
-
-      <div className="properties-section">
-        <div className="section-header">
-          <h3>Properties Overview</h3>
-          <div className="filter-controls">
-            <label htmlFor="location-filter">Filter by Location:</label>
-            <select 
-              id="location-filter"
-              value={selectedLocation} 
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="location-dropdown"
-            >
-              <option value="All Locations">All Locations</option>
-              {locations.map(location => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="property-list">
-          {filteredProperties.length === 0 ? (
-            <div className="empty-state">No properties found.</div>
-          ) : (
-            filteredProperties.map(property => (
-              <div key={property.id} className="property-card">
-                <h3>{property.title}</h3>
-                <p className="property-location">{property.city}</p>
-                <p>{property.property_type} - ${property.monthly_rent}</p>
-                <span className={`status ${property.is_active ? 'active' : 'inactive'}`}>
-                  {property.is_active ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Add Property Modal */}
-      {showAddProperty && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>Add New Property</h3>
-              <button 
-                className="modal-close" 
-                onClick={() => setShowAddProperty(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <form className="property-form" onSubmit={handleAddProperty}>
-                <div className="form-group">
-                  <label>Property Name:</label>
-                  <input type="text" placeholder="e.g., 123 Main Street" value={propertyName} onChange={e => setPropertyName(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Location:</label>
-                  {isAddingNewLocation ? (
-                    <>
-                      <input
-                        type="text"
-                        placeholder="Enter new location"
-                        value={newLocationName}
-                        onChange={e => setNewLocationName(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => { setIsAddingNewLocation(false); setNewLocationName(''); }}
-                      >
-                        Use existing location
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <select
-                        value={propertyLocation}
-                        onChange={e => setPropertyLocation(e.target.value)}
-                      >
-                        <option value="">Select location</option>
-                        {locations.map(location => (
-                          <option key={location} value={location}>{location}</option>
-                        ))}
-                      </select>
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => setIsAddingNewLocation(true)}
-                      >
-                        + Add new location
-                      </button>
-                    </>
-                  )}
-                </div>
-                <div className="form-group">
-                  <label>Property Type:</label>
-                  <input type="text" placeholder="e.g., 3 Bed, 2 Bath" value={propertyType} onChange={e => setPropertyType(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Monthly Rent:</label>
-                  <input type="text" placeholder="e.g., $2,200" value={monthlyRent} onChange={e => setMonthlyRent(e.target.value)} />
-                </div>
-                <hr />
-                <h4>Tenant Details (optional)</h4>
-                <div className="form-group">
-                  <label>First Name:</label>
-                  <input type="text" placeholder="Tenant first name" value={tenantFirstName} onChange={e => setTenantFirstName(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Last Name:</label>
-                  <input type="text" placeholder="Tenant last name" value={tenantLastName} onChange={e => setTenantLastName(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Email:</label>
-                  <input type="email" placeholder="Tenant email" value={tenantEmail} onChange={e => setTenantEmail(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Phone:</label>
-                  <input type="text" placeholder="Tenant phone" value={tenantPhone} onChange={e => setTenantPhone(e.target.value)} />
-                </div>
-                <div className="form-actions">
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowAddProperty(false)}>
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Add Property
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+const Properties = () => (
+  <div className="page">
+    <h2>Properties</h2>
+    <div className="property-list">
+      <div className="empty-state">No properties found.</div>
     </div>
-  );
-};
+  </div>
+);
 
 // Update Tenants to accept properties as a prop
 const Tenants = ({ properties, tenants, setTenants, createTenant }: {
@@ -832,9 +608,6 @@ const App: React.FC = () => {
       .then(([props, tens]) => {
         setProperties(props);
         setTenants(tens);
-        // Derive locations from properties
-        const uniqueLocations = Array.from(new Set(props.map((p: any) => p.city).filter(Boolean))) as string[];
-        setLocations(uniqueLocations);
         setLoading(false);
       })
       .catch((err) => {
@@ -866,10 +639,9 @@ const App: React.FC = () => {
           ) : (
             <Routes>
               <Route path="/" element={<Dashboard properties={properties} setProperties={setProperties} locations={locations} setLocations={setLocations} createPropertyWithTenant={createPropertyWithTenant} />} />
-              <Route path="/properties" element={<Properties properties={properties} setProperties={setProperties} locations={locations} setLocations={setLocations} createPropertyWithTenant={createPropertyWithTenant} />} />
+              <Route path="/properties" element={<Properties />} />
               <Route path="/tenants" element={<Tenants properties={properties} tenants={tenants} setTenants={setTenants} createTenant={createTenant} />} />
               <Route path="/documents" element={<Documents />} />
-              <Route path="*" element={<div className="page"><h2>Page Not Found</h2><p>The page you're looking for doesn't exist.</p></div>} />
             </Routes>
           )}
         </main>

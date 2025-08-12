@@ -20,6 +20,9 @@ class Settings(BaseSettings):
         "http://localhost:3000",  # React frontend
         "http://localhost:8081",  # React Native
         "http://localhost:19006", # Expo
+        "https://*.netlify.app",  # Netlify domains
+        "https://*.netlify.com",  # Netlify domains
+        "https://*.railway.app",  # Railway domains
     ]
     
     # File Upload
