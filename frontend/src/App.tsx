@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
-import { fetchProperties, fetchTenants, createPropertyWithTenant, createTenant, updateProperty, deleteProperty, updateTenant, deleteTenant } from './services/api';
+import { fetchProperties, fetchTenants, createPropertyWithTenant, createTenant, updateProperty, deleteProperty, updateTenant, deleteTenant } from './services/api.ts';
 
 // Simple page components
 // Update Dashboard to accept properties, setProperties, locations, setLocations as props

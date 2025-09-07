@@ -22,7 +22,7 @@ A comprehensive property management application for landlords and administrators
 - PostgreSQL (or SQLite for development)
 
 ### Backend Setup
-1. Navigate to the backend directory
+1. Navigate to the backend directory: `cd backend`
 2. Create a virtual environment: `python -m venv venv`
 3. Activate the virtual environment:
    - Windows: `.\venv\Scripts\Activate.ps1`
@@ -31,13 +31,15 @@ A comprehensive property management application for landlords and administrators
 5. Set up environment variables (see `.env.example`)
 6. Run database migrations: `python -m alembic upgrade head`
 7. Start the server: 
-   - **Windows**: `uvicorn app.main:app --reload` (from backend directory)
-   - **Mac/Linux**: `uvicorn app.main:app --reload`
+   - **Windows**: `python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+   - **Mac/Linux**: `python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+   - **Important**: Must run from the `backend` directory to avoid import errors
 
 ### Frontend Setup
-1. Navigate to the frontend directory
+1. Navigate to the frontend directory: `cd frontend`
 2. Install dependencies: `npm install`
 3. Start the development server: `npm start`
+   - **Important**: Must run from the `frontend` directory to avoid npm ENOENT errors
 
 ##  External Deployment
 
@@ -70,11 +72,14 @@ Your app is a Progressive Web App (PWA):
 
 ### Backend
 - **FastAPI**: Modern Python web framework
-- **PostgreSQL/SQLite**: Database (SQLite for development, PostgreSQL for production)
+- **Uvicorn**: ASGI server for running FastAPI applications
 - **SQLAlchemy**: ORM for database operations
 - **Alembic**: Database migrations
-- **JWT**: Authentication and authorization
-- **Pydantic**: Data validation
+- **JWT**: Authentication and authorization (python-jose)
+- **Pydantic**: Data validation and settings management
+- **Passlib**: Password hashing (bcrypt)
+- **Python-multipart**: File upload support
+- **SQLite**: Development database (PostgreSQL for production)
 
 ### Frontend
 - **React**: Web application with TypeScript
@@ -137,7 +142,7 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1  # Windows
 pip install -r requirements.txt
 python -m alembic upgrade head
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Frontend
 cd frontend
@@ -219,17 +224,27 @@ This project is licensed under the MIT License.
 
 **Import Error: "No module named 'app'"**
 - **Solution**: Always run uvicorn from the `backend` directory
-- **Command**: `cd backend && uvicorn app.main:app --reload`
+- **Command**: `cd backend && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+
+**npm Error: ENOENT - Could not read package.json**
+- **Cause**: Running npm from the wrong directory
+- **Solution**: Always run npm commands from the `frontend` directory
+- **Command**: `cd frontend && npm install`
 
 **PowerShell "cat" Error**
 - **Cause**: `| cat` is Unix/Linux syntax, not Windows PowerShell
 - **Solution**: Remove `| cat` from the command
-- **Correct**: `uvicorn app.main:app --reload`
+- **Correct**: `python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
 
 **Server Won't Start**
 - Ensure virtual environment is activated: `.\venv\Scripts\Activate.ps1`
 - Check you're in the backend directory: `pwd` should show `...\backend`
 - Verify dependencies are installed: `pip list | findstr fastapi`
+
+**Working Directory Requirements**
+- **Backend**: Must run from `backend/` directory for Python imports to work
+- **Frontend**: Must run from `frontend/` directory for npm to find package.json
+- **Alternative**: Use `--prefix` flag: `npm --prefix ./frontend install`
 
 ---
 
